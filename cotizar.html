@@ -123,7 +123,7 @@ textarea.input{min-height:80px;resize:vertical}
       <div class="card-head"><div class="card-icon">🎵</div><div class="card-title">Tipo de Servicio</div></div>
       <div class="type-grid">
         <div class="type-opt" id="btn-hora" onclick="selType('hora')"><div class="t-icon">🕐</div><div class="t-name">Por Hora</div><div class="t-price">Desde $2,500/hr</div></div>
-        <div class="type-opt" id="btn-misa" onclick="selType('misa')"><div class="t-icon">⛪</div><div class="t-name">Misas</div><div class="t-price">$1,500</div></div>
+        <div class="type-opt" id="btn-misa" onclick="selType('misa')"><div class="t-icon">⛪</div><div class="t-name">Misas</div><div class="t-price">Desde $1,500</div></div>
       </div>
 
       <!-- Package selector for "Por hora" -->
@@ -142,10 +142,8 @@ textarea.input{min-height:80px;resize:vertical}
       </div>
 
       <div class="misa-box" id="misa-box">
-        <div style="background:rgba(var(--ac-rgb),0.06);border:1px solid rgba(var(--ac-rgb),0.15);border-radius:12px;padding:14px;text-align:center">
-          <span style="font-size:28px;display:block;margin-bottom:6px">⛪</span>
-          <span style="color:#ccc;font-size:14px">Servicio musical para misa religiosa</span>
-        </div>
+        <div class="label">Seleccione su paquete de misa</div>
+        <div id="mpkg-list"></div>
       </div>
     </div>
 
@@ -208,6 +206,7 @@ var MI_NUMERO="526861391633";
 var NOMBRE_ARTISTA="Adán Ruiz Music";
 var tipo="";
 var selectedPkg=null;
+var selectedMPkg=null;
 
 // PACKAGES - These can be edited in the main app's Settings
 var PAQUETES=[
@@ -216,7 +215,10 @@ var PAQUETES=[
   {id:"3",nombre:"Cantante con Dueto",precio:4000},
   {id:"4",nombre:"Dueto + Baterista",precio:5000}
 ];
-var PRECIO_MISA=1500;
+var PAQUETES_MISA=[
+  {id:"m1",nombre:"Misa estándar",precio:1500},
+  {id:"m2",nombre:"Misa con dueto",precio:2500}
+];
 
 // Social links - update these for your artist
 var REDES={
@@ -254,7 +256,16 @@ function renderPkgs(){
   });
 }
 
-// Scroll reveal
+// Render misa packages
+function renderMPkgs(){
+  var list=document.getElementById("mpkg-list");list.innerHTML="";
+  PAQUETES_MISA.forEach(function(pkg){
+    var d=document.createElement("div");d.className="pkg-opt"+(selectedMPkg&&selectedMPkg.id===pkg.id?" active":"");
+    d.innerHTML='<span class="pkg-name">⛪ '+pkg.nombre+'</span><span class="pkg-price">$'+pkg.precio.toLocaleString("es-CO")+'</span>';
+    d.onclick=function(){selectedMPkg=pkg;renderMPkgs();calcAll()};
+    list.appendChild(d);
+  });
+}
 var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("visible");updateSteps(e.target)}})},{threshold:0.2});
 document.querySelectorAll(".card").forEach(function(c){observer.observe(c)});
 function updateSteps(card){var step=parseInt(card.getAttribute("data-step"));for(var i=1;i<=3;i++){var d=document.getElementById("s"+i);d.className=i<step?"step-dot done":i===step?"step-dot active":"step-dot"}}
@@ -277,6 +288,8 @@ function selType(t){
   document.getElementById("price-sum").className="price-sum show";
   if(t==="hora"&&!selectedPkg&&PAQUETES.length){selectedPkg=PAQUETES[0];document.getElementById("pkg-price-label").textContent="$"+selectedPkg.precio.toLocaleString("es-CO")}
   if(t==="hora")renderPkgs();
+  if(t==="misa"&&!selectedMPkg&&PAQUETES_MISA.length){selectedMPkg=PAQUETES_MISA[0]}
+  if(t==="misa")renderMPkgs();
   calcAll();checkForm();
 }
 
@@ -290,7 +303,7 @@ function calcAll(){
     document.getElementById("hours-total").textContent="$"+total.toLocaleString("es-CO");
     document.getElementById("price-desc").textContent=(selectedPkg?selectedPkg.nombre:"")+" · "+horas+" hora(s)";
   }
-  else if(tipo==="misa"){total=PRECIO_MISA;document.getElementById("price-desc").textContent="Misa religiosa"}
+  else if(tipo==="misa"){total=selectedMPkg?selectedMPkg.precio:(PAQUETES_MISA[0]?PAQUETES_MISA[0].precio:0);document.getElementById("price-desc").textContent=selectedMPkg?selectedMPkg.nombre:"Misa"}
   document.getElementById("price-total").textContent="$"+total.toLocaleString("es-CO");
   var hora=document.getElementById("hora").value,sched=document.getElementById("sched");
   if(!hora||!tipo){sched.className="sched";return}
@@ -319,8 +332,8 @@ function enviar(){
   var personas=document.getElementById("personas").value;
   var notas=document.getElementById("notas").value.trim();
   var horas=parseInt(document.getElementById("horas").value)||1;
-  var precio=tipo==="hora"?(selectedPkg?selectedPkg.precio:2500):PRECIO_MISA;
-  var total=tipo==="hora"?horas*precio:PRECIO_MISA;
+  var precio=tipo==="hora"?(selectedPkg?selectedPkg.precio:2500):(selectedMPkg?selectedMPkg.precio:1500);
+  var total=tipo==="hora"?horas*precio:precio;
   var dur=tipo==="hora"?horas:1;var p=hora.split(":");var eH=parseInt(p[0])+dur;if(eH>=24)eH-=24;
   var endStr=fmtTime(String(eH).padStart(2,"0")+":"+p[1]);
   var d=new Date(fecha+"T12:00:00");
@@ -333,6 +346,7 @@ function enviar(){
     if(selectedPkg)m+="🎤 *Paquete:* "+selectedPkg.nombre+"\n";
   }else{
     m+="📋 *Tipo:* Misa religiosa\n";
+    if(selectedMPkg)m+="⛪ *Paquete:* "+selectedMPkg.nombre+"\n";
   }
   m+="📅 *Fecha:* "+fechaF+"\n🕐 *Inicio:* "+fmtTime(hora)+"\n🕐 *Fin:* "+endStr+"\n";
   if(tipo==="hora")m+="⏱ *Duración:* "+horas+" hora(s)\n";
@@ -358,7 +372,7 @@ function resetForm(){
   document.getElementById("direccion").value="";document.getElementById("personas").value="";
   document.getElementById("notas").value="";document.getElementById("horas").value="1";
   document.getElementById("date-display").className="date-display";
-  tipo="";selectedPkg=null;
+  tipo="";selectedPkg=null;selectedMPkg=null;
   document.getElementById("btn-hora").className="type-opt";document.getElementById("btn-misa").className="type-opt";
   document.getElementById("hours-box").className="hours-box";document.getElementById("pkg-box").className="pkg-box";
   document.getElementById("misa-box").className="misa-box";
