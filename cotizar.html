@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Cotizar Evento - Adán Ruiz Music</title>
+<link rel="icon" href="./icons/icon-192.svg">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#9333EA;--ac-rgb:147,51,234}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#000;min-height:100vh;font-family:'Outfit',sans-serif;overflow-x:hidden;color:#fff}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.bg::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(var(--ac-rgb),0.12) 0%,transparent 70%);top:-200px;right:-200px;animation:f1 12s ease-in-out infinite}
+.bg::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(var(--ac-rgb),0.08) 0%,transparent 70%);bottom:-100px;left:-100px;animation:f2 15s ease-in-out infinite}
+@keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,80px)}}
+@keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,-60px)}}
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+.particle{position:absolute;opacity:0.07;animation:pf linear infinite}
+@keyframes pf{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:0.07}90%{opacity:0.07}100%{transform:translateY(-20px) rotate(360deg);opacity:0}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:2;max-width:520px;margin:0 auto;padding:24px 20px 50px}
+.hero{text-align:center;padding:40px 0 30px;animation:hi 1s ease both}
+@keyframes hi{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.hero-logo{width:70px;height:70px;border-radius:18px;box-shadow:0 0 40px rgba(var(--ac-rgb),0.5);margin-bottom:16px;animation:lp 3s ease-in-out infinite}
+@keyframes lp{0%,100%{box-shadow:0 0 20px rgba(var(--ac-rgb),0.3)}50%{box-shadow:0 0 50px rgba(var(--ac-rgb),0.6)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1.1}
+.hero h1 span{color:var(--ac);font-style:italic}
+.hero p{color:#888;font-size:14px;margin-top:10px;line-height:1.6}
+.hero p b{color:#25d366}
+.hero-line{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--ac),transparent);margin:16px auto 0}
+.steps{display:flex;gap:6px;margin-bottom:20px}
+.step-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.06);transition:background 0.5s}
+.step-dot.done{background:var(--ac)}
+.step-dot.active{background:linear-gradient(90deg,var(--ac),rgba(var(--ac-rgb),0.3));background-size:200% 100%;animation:sh 1.5s infinite}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:22px;margin-bottom:16px;opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.card-icon{width:36px;height:36px;border-radius:10px;background:rgba(var(--ac-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:18px}
+.card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+.field{margin-bottom:16px}.field:last-child{margin-bottom:0}
+.label{display:block;font-size:11px;color:#666;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.req{color:var(--ac)}
+.input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;color:#fff;font-size:15px;outline:none;transition:border-color 0.3s,box-shadow 0.3s;font-family:'Outfit',sans-serif}
+.input:focus{border-color:rgba(var(--ac-rgb),0.4);box-shadow:0 0 15px rgba(var(--ac-rgb),0.1)}
+.input::placeholder{color:#444}
+textarea.input{min-height:80px;resize:vertical}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.type-opt{text-align:center;padding:20px 12px;border-radius:16px;cursor:pointer;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);transition:all 0.3s;position:relative;overflow:hidden}
+.type-opt::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(var(--ac-rgb),0.15),transparent 70%);opacity:0;transition:opacity 0.3s}
+.type-opt.active{border-color:rgba(var(--ac-rgb),0.4);background:rgba(var(--ac-rgb),0.08)}
+.type-opt.active::before{opacity:1}
+.type-opt .t-icon{font-size:32px;margin-bottom:8px;transition:transform 0.3s}
+.type-opt.active .t-icon{transform:scale(1.15)}
+.type-opt .t-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#888;transition:color 0.3s}
+.type-opt.active .t-name{color:#fff}
+.type-opt .t-price{font-size:12px;color:#555;margin-top:4px;font-family:'JetBrains Mono',monospace;transition:color 0.3s}
+.type-opt.active .t-price{color:var(--ac)}
+.hours-box,.pkg-box,.misa-box{display:none;margin-top:16px}.hours-box.show,.pkg-box.show,.misa-box.show{display:block}
+.hours-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.hours-input{width:70px;text-align:center;font-size:20px;font-weight:700}
+.pkg-opt{padding:12px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s}
+.pkg-opt.active{border-color:rgba(var(--ac-rgb),0.4);background:rgba(var(--ac-rgb),0.08)}
+.pkg-opt .pkg-name{font-weight:600;font-size:14px;color:#ccc}
+.pkg-opt.active .pkg-name{color:#fff}
+.pkg-opt .pkg-price{font-family:'JetBrains Mono',monospace;font-size:13px;color:#666}
+.pkg-opt.active .pkg-price{color:var(--ac)}
+.sched{display:none;background:rgba(var(--ac-rgb),0.04);border:1px solid rgba(var(--ac-rgb),0.1);border-radius:14px;padding:14px;margin-top:14px}
+.sched.show{display:block;animation:fu 0.4s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sched-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.sched-label{color:#999;font-size:12px}
+.sched-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px}
+.sched-val.start{color:#fff}.sched-val.end{color:var(--ac)}
+.sched-dur{text-align:center;padding-top:6px;border-top:1px solid rgba(var(--ac-rgb),0.08);color:#777;font-size:11px;margin-top:4px}
+.date-display{margin-top:6px;padding:8px 12px;background:rgba(var(--ac-rgb),0.04);border:1px solid rgba(var(--ac-rgb),0.1);border-radius:8px;color:#fff;font-size:13px;font-weight:500;display:none}
+.date-display.show{display:block;animation:fu 0.3s ease}
+.price-sum{display:none;background:linear-gradient(135deg,rgba(var(--ac-rgb),0.06),rgba(var(--ac-rgb),0.02));border:1px solid rgba(var(--ac-rgb),0.15);border-radius:16px;padding:18px;margin-top:16px}
+.price-sum.show{display:block;animation:fu 0.4s ease both}
+.price-row{display:flex;justify-content:space-between;align-items:center}
+.price-label{color:#999;font-size:13px}
+.price-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22px;color:var(--ac)}
+.submit{width:100%;padding:16px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;border:none;color:#fff;font-family:'Outfit',sans-serif;margin-top:16px;position:relative;overflow:hidden;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#1a8d45,#25d366)}
+.submit:disabled{opacity:0.35;cursor:not-allowed}
+.submit:not(:disabled):active{transform:scale(0.97)}
+.success{display:none;text-align:center;padding:60px 20px;animation:si 0.6s ease both}
+.success.show{display:block}
+@keyframes si{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.success-check{width:80px;height:80px;border-radius:50%;background:rgba(37,211,102,0.1);border:3px solid #25d366;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:cp 0.5s ease 0.3s both}
+@keyframes cp{from{transform:scale(0)}to{transform:scale(1)}}
+.success h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:10px}
+.success p{color:#999;font-size:14px;line-height:1.6}
+.success .retry{color:#25d366;text-decoration:none;font-weight:600}
+.success .new-btn{margin-top:24px;padding:14px 30px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:rgba(var(--ac-rgb),0.08);border:1px solid rgba(var(--ac-rgb),0.2);color:var(--ac);font-family:'Outfit',sans-serif}
+.footer{text-align:center;margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.04)}
+.footer-logo{width:40px;height:40px;border-radius:10px;margin:0 auto 10px}
+.footer p{color:#555;font-size:11px;line-height:1.8}
+.footer a{color:var(--ac);text-decoration:none}
+.socials{display:flex;justify-content:center;gap:16px;margin-top:12px}
+.social-link{color:#666;font-size:11px;text-decoration:none;transition:color 0.3s}
+.social-link:hover{color:var(--ac)}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="particles" id="particles"></div>
+<div class="grain"></div>
+
+<div class="wrap">
+  <div class="hero">
+    <img src="./icons/icon-192.svg" class="hero-logo" alt="Logo">
+    <h1>Adán <span>Ruiz</span> Music</h1>
+    <p>Música en vivo para su evento especial.<br>Cotice en segundos y lo contactamos por <b>WhatsApp</b>.</p>
+    <div class="hero-line"></div>
+  </div>
+  <div class="steps"><div class="step-dot active" id="s1"></div><div class="step-dot" id="s2"></div><div class="step-dot" id="s3"></div></div>
+
+  <div id="form-section">
+    <div class="card" data-step="1">
+      <div class="card-head"><div class="card-icon">🎵</div><div class="card-title">Tipo de Servicio</div></div>
+      <div class="type-grid">
+        <div class="type-opt" id="btn-hora" onclick="selType('hora')"><div class="t-icon">🕐</div><div class="t-name">Por Hora</div><div class="t-price">Desde $2,500/hr</div></div>
+        <div class="type-opt" id="btn-misa" onclick="selType('misa')"><div class="t-icon">⛪</div><div class="t-name">Misas</div><div class="t-price">$1,500</div></div>
+      </div>
+
+      <!-- Package selector for "Por hora" -->
+      <div class="pkg-box" id="pkg-box">
+        <div class="label">Seleccione su paquete</div>
+        <div id="pkg-list"></div>
+      </div>
+
+      <div class="hours-box" id="hours-box">
+        <div class="label">¿Cuántas horas necesita?</div>
+        <div class="hours-row">
+          <input type="number" class="input hours-input" id="horas" value="1" min="1" max="12" oninput="calcAll()">
+          <span style="color:#888;font-size:13px">hrs × <span id="pkg-price-label">$2,500</span> =</span>
+          <span style="color:var(--ac);font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace" id="hours-total">$2,500</span>
+        </div>
+      </div>
+
+      <div class="misa-box" id="misa-box">
+        <div style="background:rgba(var(--ac-rgb),0.06);border:1px solid rgba(var(--ac-rgb),0.15);border-radius:12px;padding:14px;text-align:center">
+          <span style="font-size:28px;display:block;margin-bottom:6px">⛪</span>
+          <span style="color:#ccc;font-size:14px">Servicio musical para misa religiosa</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-step="2">
+      <div class="card-head"><div class="card-icon">📅</div><div class="card-title">Datos del Evento</div></div>
+      <div class="field">
+        <label class="label">Fecha del evento <span class="req">*</span></label>
+        <input type="date" class="input" id="fecha" required onchange="showDate()">
+        <div class="date-display" id="date-display"></div>
+      </div>
+      <div class="field">
+        <label class="label">Hora de inicio <span class="req">*</span></label>
+        <select class="input" id="hora" onchange="calcAll()"><option value="">Seleccione la hora...</option></select>
+      </div>
+      <div class="sched" id="sched">
+        <div class="sched-row"><span class="sched-label">🕐 Inicio</span><span class="sched-val start" id="t-start">--</span></div>
+        <div class="sched-row"><span class="sched-label">🕐 Fin estimado</span><span class="sched-val end" id="t-end">--</span></div>
+        <div class="sched-dur" id="t-dur"></div>
+      </div>
+      <div class="field">
+        <label class="label">Lugar del evento</label>
+        <input type="text" class="input" id="direccion" placeholder="¿Dónde será?">
+      </div>
+      <div class="field">
+        <label class="label">Invitados (aprox.)</label>
+        <input type="number" class="input" id="personas" placeholder="50" min="1">
+      </div>
+    </div>
+
+    <div class="card" data-step="3">
+      <div class="card-head"><div class="card-icon">👤</div><div class="card-title">Sus Datos</div></div>
+      <div class="field"><label class="label">Nombre completo <span class="req">*</span></label><input type="text" class="input" id="nombre" placeholder="¿Cómo se llama?"></div>
+      <div class="field"><label class="label">Teléfono <span class="req">*</span></label><input type="tel" class="input" id="telefono" value="686" placeholder="686 123 4567"></div>
+      <div class="field"><label class="label">Notas especiales</label><textarea class="input" id="notas" placeholder="¿Algún detalle extra?"></textarea></div>
+    </div>
+
+    <div class="price-sum" id="price-sum">
+      <div class="price-row"><span class="price-label" id="price-desc">Total estimado</span><span class="price-val" id="price-total">$0</span></div>
+    </div>
+    <button class="submit" id="submit-btn" onclick="enviar()" disabled><span>💬</span> Enviar solicitud por WhatsApp</button>
+  </div>
+
+  <div class="success" id="success">
+    <div class="success-check">✅</div>
+    <h2>¡Solicitud Enviada!</h2>
+    <p><b>Adán Ruiz Music</b> se comunicará con usted pronto por WhatsApp para confirmar disponibilidad y detalles.</p>
+    <p style="margin-top:12px;font-size:12px">¿No se abrió WhatsApp? <a href="#" id="retry-link" class="retry">Toque aquí para reintentar</a></p>
+    <button class="new-btn" onclick="resetForm()">Enviar otra solicitud</button>
+  </div>
+
+  <div class="footer">
+    <img src="./icons/icon-192.svg" class="footer-logo" alt="Logo">
+    <p><b style="color:var(--ac)">Adán Ruiz Music</b><br>Música en Vivo para Eventos</p>
+    <div class="socials" id="footer-socials"></div>
+  </div>
+</div>
+
+<script>
+var MI_NUMERO="526861391633";
+var NOMBRE_ARTISTA="Adán Ruiz Music";
+var tipo="";
+var selectedPkg=null;
+
+// PACKAGES - These can be edited in the main app's Settings
+var PAQUETES=[
+  {id:"1",nombre:"Cantante Solista",precio:2500},
+  {id:"2",nombre:"Solista + Baterista",precio:3500},
+  {id:"3",nombre:"Cantante con Dueto",precio:4000},
+  {id:"4",nombre:"Dueto + Baterista",precio:5000}
+];
+var PRECIO_MISA=1500;
+
+// Social links - update these for your artist
+var REDES={
+  // facebook:"https://facebook.com/adanruizmusic",
+  // instagram:"https://instagram.com/adanruizmusic",
+  // tiktok:"https://tiktok.com/@adanruizmusic"
+};
+
+var MS=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+var DIAS=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+// Min date
+document.getElementById("fecha").setAttribute("min",new Date().toISOString().split("T")[0]);
+
+// Time options
+var horaSelect=document.getElementById("hora");
+[17,18,19,20,21,22,23,16,15,14,13,12,11,10,9,8,7,6].forEach(function(_h){for(var _m=0;_m<60;_m+=30){var hr=_h%12||12;var ap=_h>=12?"PM":"AM";var val=String(_h).padStart(2,"0")+":"+String(_m).padStart(2,"0");var lab=hr+":"+String(_m).padStart(2,"0")+" "+ap;var opt=document.createElement("option");opt.value=val;opt.textContent=lab;horaSelect.appendChild(opt)}});
+
+// Particles
+(function(){var icons=["🎵","🎤","🎶","♪","♫","✨"];var c=document.getElementById("particles");for(var i=0;i<12;i++){var p=document.createElement("div");p.className="particle";p.textContent=icons[i%icons.length];p.style.left=Math.random()*100+"%";p.style.fontSize=(10+Math.random()*14)+"px";p.style.animationDuration=(15+Math.random()*20)+"s";p.style.animationDelay=(Math.random()*15)+"s";c.appendChild(p)}})();
+
+// Footer socials
+(function(){var el=document.getElementById("footer-socials");if(REDES.facebook){var a=document.createElement("a");a.href=REDES.facebook;a.target="_blank";a.className="social-link";a.textContent="📘 Facebook";el.appendChild(a)}if(REDES.instagram){var a=document.createElement("a");a.href=REDES.instagram;a.target="_blank";a.className="social-link";a.textContent="📸 Instagram";el.appendChild(a)}if(REDES.tiktok){var a=document.createElement("a");a.href=REDES.tiktok;a.target="_blank";a.className="social-link";a.textContent="🎵 TikTok";el.appendChild(a)}})();
+
+// Render packages
+function renderPkgs(){
+  var list=document.getElementById("pkg-list");list.innerHTML="";
+  PAQUETES.forEach(function(pkg){
+    var d=document.createElement("div");d.className="pkg-opt"+(selectedPkg&&selectedPkg.id===pkg.id?" active":"");
+    d.innerHTML='<span class="pkg-name">'+pkg.nombre+'</span><span class="pkg-price">$'+pkg.precio.toLocaleString("es-CO")+'/hr</span>';
+    d.onclick=function(){selectedPkg=pkg;renderPkgs();calcAll();
+      document.getElementById("pkg-price-label").textContent="$"+pkg.precio.toLocaleString("es-CO");
+    };
+    list.appendChild(d);
+  });
+}
+
+// Scroll reveal
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("visible");updateSteps(e.target)}})},{threshold:0.2});
+document.querySelectorAll(".card").forEach(function(c){observer.observe(c)});
+function updateSteps(card){var step=parseInt(card.getAttribute("data-step"));for(var i=1;i<=3;i++){var d=document.getElementById("s"+i);d.className=i<step?"step-dot done":i===step?"step-dot active":"step-dot"}}
+
+function showDate(){
+  var v=document.getElementById("fecha").value;var dd=document.getElementById("date-display");
+  if(!v){dd.className="date-display";return}
+  var d=new Date(v+"T12:00:00");
+  dd.textContent="📅 "+DIAS[d.getDay()]+" "+d.getDate()+" de "+MS[d.getMonth()]+" de "+d.getFullYear();
+  dd.className="date-display show";calcAll();
+}
+
+function selType(t){
+  tipo=t;
+  document.getElementById("btn-hora").className="type-opt"+(t==="hora"?" active":"");
+  document.getElementById("btn-misa").className="type-opt"+(t==="misa"?" active":"");
+  document.getElementById("hours-box").className="hours-box"+(t==="hora"?" show":"");
+  document.getElementById("pkg-box").className="pkg-box"+(t==="hora"?" show":"");
+  document.getElementById("misa-box").className="misa-box"+(t==="misa"?" show":"");
+  document.getElementById("price-sum").className="price-sum show";
+  if(t==="hora"&&!selectedPkg&&PAQUETES.length){selectedPkg=PAQUETES[0];document.getElementById("pkg-price-label").textContent="$"+selectedPkg.precio.toLocaleString("es-CO")}
+  if(t==="hora")renderPkgs();
+  calcAll();checkForm();
+}
+
+function fmtTime(t){if(!t)return"";var p=t.split(":");var h=parseInt(p[0]);return(h%12||12)+":"+p[1]+" "+(h>=12?"PM":"AM")}
+
+function calcAll(){
+  var total=0,horas=parseInt(document.getElementById("horas").value)||1;
+  if(tipo==="hora"){
+    var precio=selectedPkg?selectedPkg.precio:2500;
+    total=horas*precio;
+    document.getElementById("hours-total").textContent="$"+total.toLocaleString("es-CO");
+    document.getElementById("price-desc").textContent=(selectedPkg?selectedPkg.nombre:"")+" · "+horas+" hora(s)";
+  }
+  else if(tipo==="misa"){total=PRECIO_MISA;document.getElementById("price-desc").textContent="Misa religiosa"}
+  document.getElementById("price-total").textContent="$"+total.toLocaleString("es-CO");
+  var hora=document.getElementById("hora").value,sched=document.getElementById("sched");
+  if(!hora||!tipo){sched.className="sched";return}
+  var dur=tipo==="hora"?horas:1;var p=hora.split(":");var eH=parseInt(p[0])+dur;var nd=eH>=24;if(nd)eH-=24;
+  document.getElementById("t-start").textContent=fmtTime(hora);
+  document.getElementById("t-end").textContent=fmtTime(String(eH).padStart(2,"0")+":"+p[1])+(nd?" (día sig.)":"");
+  document.getElementById("t-dur").textContent=tipo==="hora"?"Duración: "+horas+" hora(s)":"Misa: ~1 hora aprox.";
+  sched.className="sched show";checkForm();
+}
+
+function checkForm(){
+  var n=document.getElementById("nombre").value.trim();
+  var t=document.getElementById("telefono").value.trim();
+  var f=document.getElementById("fecha").value;
+  var hr=document.getElementById("hora").value;
+  document.getElementById("submit-btn").disabled=!(tipo&&n&&t&&f&&hr);
+}
+document.querySelectorAll("input,textarea,select").forEach(function(el){el.addEventListener("input",checkForm)});
+
+function enviar(){
+  var nombre=document.getElementById("nombre").value.trim();
+  var telefono=document.getElementById("telefono").value.trim();
+  var fecha=document.getElementById("fecha").value;
+  var hora=document.getElementById("hora").value;
+  var direccion=document.getElementById("direccion").value.trim();
+  var personas=document.getElementById("personas").value;
+  var notas=document.getElementById("notas").value.trim();
+  var horas=parseInt(document.getElementById("horas").value)||1;
+  var precio=tipo==="hora"?(selectedPkg?selectedPkg.precio:2500):PRECIO_MISA;
+  var total=tipo==="hora"?horas*precio:PRECIO_MISA;
+  var dur=tipo==="hora"?horas:1;var p=hora.split(":");var eH=parseInt(p[0])+dur;if(eH>=24)eH-=24;
+  var endStr=fmtTime(String(eH).padStart(2,"0")+":"+p[1]);
+  var d=new Date(fecha+"T12:00:00");
+  var fechaF=d.getDate()+" de "+MS[d.getMonth()]+" de "+d.getFullYear();
+
+  var m="🎤 *SOLICITUD DE EVENTO MUSICAL*\n━━━━━━━━━━━━━━━━━━\n\n";
+  m+="👤 *Cliente:* "+nombre+"\n📱 *Teléfono:* "+telefono+"\n\n";
+  if(tipo==="hora"){
+    m+="📋 *Tipo:* Por Hora ("+horas+" hrs)\n";
+    if(selectedPkg)m+="🎤 *Paquete:* "+selectedPkg.nombre+"\n";
+  }else{
+    m+="📋 *Tipo:* Misa religiosa\n";
+  }
+  m+="📅 *Fecha:* "+fechaF+"\n🕐 *Inicio:* "+fmtTime(hora)+"\n🕐 *Fin:* "+endStr+"\n";
+  if(tipo==="hora")m+="⏱ *Duración:* "+horas+" hora(s)\n";
+  if(direccion)m+="📍 *Lugar:* "+direccion+"\n";
+  if(personas)m+="👥 *Invitados:* "+personas+"\n";
+  m+="\n💰 *Total estimado:* $"+total.toLocaleString("es-CO")+"\n";
+  if(notas)m+="\n📝 *Notas:* "+notas+"\n";
+  m+="\n━━━━━━━━━━━━━━━━━━\n_Enviado desde "+NOMBRE_ARTISTA+"_";
+
+  var waLink="https://wa.me/"+MI_NUMERO+"?text="+encodeURIComponent(m);
+  document.getElementById("retry-link").href=waLink;
+  window.open(waLink,"_blank");
+  document.getElementById("form-section").style.display="none";
+  document.getElementById("success").className="success show";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetForm(){
+  document.getElementById("form-section").style.display="block";
+  document.getElementById("success").className="success";
+  document.getElementById("nombre").value="";document.getElementById("telefono").value="686";
+  document.getElementById("fecha").value="";document.getElementById("hora").value="";
+  document.getElementById("direccion").value="";document.getElementById("personas").value="";
+  document.getElementById("notas").value="";document.getElementById("horas").value="1";
+  document.getElementById("date-display").className="date-display";
+  tipo="";selectedPkg=null;
+  document.getElementById("btn-hora").className="type-opt";document.getElementById("btn-misa").className="type-opt";
+  document.getElementById("hours-box").className="hours-box";document.getElementById("pkg-box").className="pkg-box";
+  document.getElementById("misa-box").className="misa-box";
+  document.getElementById("price-sum").className="price-sum";document.getElementById("sched").className="sched";
+  document.querySelectorAll(".card").forEach(function(c){c.classList.remove("visible")});
+  setTimeout(function(){document.querySelectorAll(".card").forEach(function(c){observer.observe(c)})},100);
+  checkForm();window.scrollTo({top:0,behavior:"smooth"});
+}
+setTimeout(function(){document.querySelector(".card").classList.add("visible")},300);
+</script>
+</body>
+</html>
